@@ -1,5 +1,7 @@
 ## cluster-infra-quick-launch
 
+(This Repo is currently under developing and may subject to changes.)
+
 Quick launch your cluster with more additional features.
 
 We leverage project [awsome-distributed-training](https://github.com/aws-samples/awsome-distributed-training), and integrate the fragmented Cluster building processes as well as building hierachical Storage layers.
