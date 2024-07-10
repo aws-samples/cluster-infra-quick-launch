@@ -1,11 +1,12 @@
-## My Project
+## cluster-infra-quick-launch
 
-TODO: Fill this README out!
+Quick launch your cluster with more additional features.
 
-Be sure to:
+We leverage project [awsome-distributed-training](https://github.com/aws-samples/awsome-distributed-training), and integrate the fragmented Cluster building processes as well as building hierachical Storage layers.
 
-* Change the title in this README
-* Edit your repository description on GitHub
+For more details, our public blog can be referred, including the explainations of the building process, also the performance analysis of the checkpointing process.
+
+
 
 ## Security
 
