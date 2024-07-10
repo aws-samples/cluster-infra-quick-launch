@@ -1,0 +1,14 @@
+#!/bin/bash
+
+sudo su - ubuntu
+pwd
+
+# on headnode
+cd ~/.ssh
+ssh-keygen -t rsa -q -f "$HOME/.ssh/id_rsa" -N ""
+cat id_rsa.pub >> authorized_keys
+
+
+salloc -N 1
+ssh $(srun hostname)
+pwd
