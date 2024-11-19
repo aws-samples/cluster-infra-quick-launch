@@ -18,7 +18,7 @@ echo `aws --version`
 echo "--Check aws cli command for HyperPod cluster--"
 echo `aws sagemaker help | grep cluster`
 
-git clone https://github.com/aws-samples/awsome-distributed-training/
+git clone --depth=1 https://github.com/aws-samples/awsome-distributed-training/
 
 # c9 ubuntu env
 # sudo apt update
