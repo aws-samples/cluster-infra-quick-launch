@@ -7,7 +7,7 @@ export CLUSTER_NAME=smhp-cluster-1
 export ROLE=arn:aws:iam::633205212955:role/ec2-adm-role
 
 export CTRL_INSTANCE_TYPE=ml.c5.4xlarge
-export INSTANCE_TYPE=ml.g6.2xlarge
+export INSTANCE_TYPE=ml.g5.4xlarge
 export INSTANCE_COUNT=2
 export VPC_ID=vpc-01607238f9a0e2cce
 export SUBNET_ID=subnet-050c2bfcbd496bee5
@@ -26,26 +26,58 @@ cat > cluster-config.json << EOL
     "ClusterName": "${CLUSTER_NAME}",
     "InstanceGroups": [
       {
-        "InstanceGroupName": "${CLUSTER_NAME}-controller-group",
+        "InstanceGroupName": "${CLUSTER_NAME}-login-node",
         "InstanceType": "${CTRL_INSTANCE_TYPE}",
+        "InstanceStorageConfigs": [
+          {
+            "EbsVolumeConfig": {
+              "VolumeSizeInGB": 500
+            }
+          }
+        ],
         "InstanceCount": 1,
         "LifeCycleConfig": {
           "SourceS3Uri": "${LIFECYCLE_CONF_S3_PATH}",
           "OnCreate": "on_create.sh"
         },
         "ExecutionRole": "${ROLE}",
-        "ThreadsPerCore": 1
+        "ThreadsPerCore": 2
       },
       {
-        "InstanceGroupName": "${CLUSTER_NAME}-worker-group",
-        "InstanceType": "${INSTANCE_TYPE}",
-        "InstanceCount": ${INSTANCE_COUNT},
+        "InstanceGroupName": "${CLUSTER_NAME}-controller-node",
+        "InstanceType": "${CTRL_INSTANCE_TYPE}",
+        "InstanceStorageConfigs": [
+          {
+            "EbsVolumeConfig": {
+              "VolumeSizeInGB": 500
+            }
+          }
+        ],
+        "InstanceCount": 1,
         "LifeCycleConfig": {
           "SourceS3Uri": "${LIFECYCLE_CONF_S3_PATH}",
           "OnCreate": "on_create.sh"
         },
         "ExecutionRole": "${ROLE}",
-        "ThreadsPerCore": 1
+        "ThreadsPerCore": 2
+      },
+      {
+        "InstanceGroupName": "${CLUSTER_NAME}-worker-group-1",
+        "InstanceType": "${INSTANCE_TYPE}",
+        "InstanceCount": ${INSTANCE_COUNT},
+        "InstanceStorageConfigs": [
+          {
+            "EbsVolumeConfig": {
+              "VolumeSizeInGB": 500
+            }
+          }
+        ],
+        "LifeCycleConfig": {
+          "SourceS3Uri": "${LIFECYCLE_CONF_S3_PATH}",
+          "OnCreate": "on_create.sh"
+        },
+        "ExecutionRole": "${ROLE}",
+        "ThreadsPerCore": 2
       }
     ],
     "VpcConfig": {
@@ -56,15 +88,19 @@ cat > cluster-config.json << EOL
 EOL
 
 
-controller_group_name=$(cat cluster-config.json | jq '.InstanceGroups[0].InstanceGroupName')
-worker_group_name=$(cat cluster-config.json | jq '.InstanceGroups[1].InstanceGroupName')
+login_group_name=$(cat cluster-config.json | jq '.InstanceGroups[0].InstanceGroupName')
+controller_group_name=$(cat cluster-config.json | jq '.InstanceGroups[1].InstanceGroupName')
+worker_group_name=$(cat cluster-config.json | jq '.InstanceGroups[2].InstanceGroupName')
 instance_type=$(cat cluster-config.json | jq '.InstanceGroups[1].InstanceType')
+
+
 
 cat > provisioning_parameters.json << EOL
 {
   "version": "1.0.0",
   "workload_manager": "slurm",
   "controller_group": ${controller_group_name},
+  "login_group": ${login_group_name},
   "worker_groups": [
     {
       "instance_group_name": ${worker_group_name},
@@ -91,4 +127,3 @@ aws s3 cp provisioning_parameters.json ${LIFECYCLE_CONF_S3_PATH}
 python3 awsome-distributed-training/1.architectures/5.sagemaker-hyperpod/validate-config.py \
 	--cluster-config cluster-config.json \
 	--provisioning-parameters provisioning_parameters.json
-	
