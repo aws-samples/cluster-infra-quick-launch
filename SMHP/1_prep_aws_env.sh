@@ -23,7 +23,7 @@ echo `aws sagemaker help | grep cluster`
 git clone --depth=1 https://github.com/aws-samples/awsome-distributed-training/
 
 pip install -U pip
-pip install -U boto3 omegaconf
+pip install -U boto3 omegaconf jsonschema
 
 # change lifecycle config if need
 # awsome-distributed-training/1.architectures/5.sagemaker-hyperpod/LifecycleScripts/base-config/config.py
