@@ -91,7 +91,7 @@ EOL
 login_group_name=$(cat cluster-config.json | jq '.InstanceGroups[0].InstanceGroupName')
 controller_group_name=$(cat cluster-config.json | jq '.InstanceGroups[1].InstanceGroupName')
 worker_group_name=$(cat cluster-config.json | jq '.InstanceGroups[2].InstanceGroupName')
-instance_type=$(cat cluster-config.json | jq '.InstanceGroups[1].InstanceType')
+instance_type=$(cat cluster-config.json | jq '.InstanceGroups[2].InstanceType')
 
 
 
